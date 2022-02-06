@@ -28,13 +28,8 @@ namespace Fortwars
 
 		public override void StartTouch( Entity other )
 		{
-			base.StartTouch( other );
-
-			if ( other.IsWorld )
-				return;
-
-			if ( other is Player )
-				Game.Instance.OnPlayerTouchFlagzone( other as FortwarsPlayer, Team );
+			if ( other is FortwarsPlayer player )
+				Event.Run( "gamemodes.ctf.flagzone.touched", player, Team );
 		}
 
 		public override void EndTouch( Entity other )
