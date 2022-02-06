@@ -15,7 +15,7 @@ namespace Fortwars.Gamemodes
 		[Net] public FortwarsPlayer RedFlagCarrier { get; set; }
 		[Net] public FortwarsPlayer BlueFlagCarrier { get; set; }
 
-		// Toilet Rolls
+		// Toilet Rolls (Flags)
 		[Net] public BogRoll RedFlagRoll { get; set; }
 		[Net] public BogRoll BlueFlagRoll { get; set; }
 		
@@ -23,7 +23,8 @@ namespace Fortwars.Gamemodes
 		// Callbacks
 		//
 		
-				public void OnPlayerTouchFlagzone( FortwarsPlayer player, Team team )
+		[Event( "gamemodes.ctf.flagzone.touched" )]
+		public void OnPlayerTouchFlagzone( FortwarsPlayer player, Team team )
 		{
 			// don't let spectators interact with the flagzone at all
 			if ( player.IsSpectator )
@@ -62,9 +63,9 @@ namespace Fortwars.Gamemodes
 		{
 			BaseTeam enemyTeam = player.TeamID switch
 			{
-				Team.Blue => RedTeam,
-				Team.Red => BlueTeam,
-				_ => RedTeam, // shit but shutiup
+				Team.Blue => Game.Instance.RedTeam,
+				Team.Red => Game.Instance.BlueTeam,
+				_ => Game.Instance.RedTeam, // shit but shutiup
 			};
 
 			if ( enemyTeam is RedTeam )
@@ -94,19 +95,19 @@ namespace Fortwars.Gamemodes
 		{
 			BaseTeam enemyTeam = player.TeamID switch
 			{
-				Team.Blue => RedTeam,
-				Team.Red => BlueTeam,
-				_ => RedTeam, // shit but shutiup
+				Team.Blue => Game.Instance.RedTeam,
+				Team.Red => Game.Instance.BlueTeam,
+				_ => Game.Instance.RedTeam, // shit but shutiup
 			};
 
-			if ( enemyTeam is RedTeam )
+			switch ( enemyTeam )
 			{
-				RedFlagCarrier = player;
-			}
-
-			if ( enemyTeam is BlueTeam )
-			{
-				BlueFlagCarrier = player;
+				case RedTeam :
+					RedFlagCarrier = player;
+					break;
+				case BlueTeam :
+					BlueFlagCarrier = player;
+					break;
 			}
 
 			ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} picked up {enemyTeam.Name} flag", $"avatar:{player.Client.PlayerId}" );
@@ -130,7 +131,7 @@ namespace Fortwars.Gamemodes
 				ShowFlag( Team.Blue );
 
 				// Announce
-				ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} scored for {RedTeam.Name}", $"avatar:{player.Client.PlayerId}" );
+				ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} scored for {Game.Instance.RedTeam.Name}", $"avatar:{player.Client.PlayerId}" );
 			}
 
 			if ( player == RedFlagCarrier )
@@ -144,7 +145,7 @@ namespace Fortwars.Gamemodes
 				ShowFlag( Team.Red );
 
 				// Announce
-				ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} scored for {BlueTeam.Name}", $"avatar:{player.Client.PlayerId}" );
+				ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} scored for {Game.Instance.BlueTeam.Name}", $"avatar:{player.Client.PlayerId}" );
 			}
 		}
 
@@ -152,14 +153,14 @@ namespace Fortwars.Gamemodes
 		{
 			if ( player == BlueFlagCarrier )
 			{
-				ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} dropped {BlueTeam.Name} flag", $"avatar:{player.Client.PlayerId}" );
+				ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} dropped {Game.Instance.BlueTeam.Name} flag", $"avatar:{player.Client.PlayerId}" );
 				BlueFlagCarrier = null;
 				//ShowFlag( Team.Blue );
 				return;
 			}
 			if ( player == RedFlagCarrier )
 			{
-				ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} dropped {RedTeam.Name} flag", $"avatar:{player.Client.PlayerId}" );
+				ChatBox.AddInformation( To.Everyone, $"{player.Client.Name} dropped {Game.Instance.RedTeam.Name} flag", $"avatar:{player.Client.PlayerId}" );
 				RedFlagCarrier = null;
 				//ShowFlag( Team.Red );
 				return;
@@ -174,14 +175,14 @@ namespace Fortwars.Gamemodes
 		{
 			if ( Team == Team.Blue )
 			{
-				ChatBox.AddInformation( To.Everyone, $"{BlueTeam.Name} flag returned");
+				ChatBox.AddInformation( To.Everyone, $"{Game.Instance.BlueTeam.Name} flag returned");
 				BlueFlagCarrier = null;
 				ShowFlag( Team.Blue );
 				return;
 			}
 			if ( Team == Team.Red )
 			{
-				ChatBox.AddInformation( To.Everyone, $"{RedTeam.Name} flag returned" );
+				ChatBox.AddInformation( To.Everyone, $"{Game.Instance.RedTeam.Name} flag returned" );
 				RedFlagCarrier = null;
 				ShowFlag( Team.Red );
 				return;
