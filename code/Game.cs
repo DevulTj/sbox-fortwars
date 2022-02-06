@@ -3,6 +3,7 @@ using Sandbox;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Fortwars.Gamemodes;
 
 namespace Fortwars
 {
@@ -12,7 +13,7 @@ namespace Fortwars
 		{
 			get => Current as Game;
 		}
-
+		
 		// shit hack, ideally Time.Now should be synced with server
 		[Net] public float ServerTime { get; private set; }
 
@@ -137,6 +138,36 @@ namespace Fortwars
 			pawn.Position = randomSpawn.Position;
 			pawn.Rotation = randomSpawn.Rotation;
 		}
+		
+		//
+		// Gamemodes
+		//
+		
+		[Net] public Gamemode Gamemode { get; set; }
+		
+		public void ChangeGamemode( Gamemode gamemode ) 
+		{
+			Host.AssertServer();
+
+			if( !gamemode.Validate( out var reason ) ) 
+			{
+				Log.Error($"{gamemode.ClassInfo.Name} is not valid. {reason}");
+				return;
+			}
+
+			Gamemode?.Finish();
+			Gamemode?.Cleanup();
+
+			Gamemode = gamemode;
+
+			Gamemode?.Start();
+			
+			Event.Run("gamemode.changed", Gamemode);
+		}
+		
+		//
+		// Commands
+		//
 
 		[ServerCmd( "recreatehud" )]
 		public static void RecreateHud()
