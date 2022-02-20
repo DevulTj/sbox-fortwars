@@ -79,6 +79,10 @@ namespace Fortwars
 			if ( ConsoleSystem.Caller == null )
 				return;
 
+			BlockAsset blockAsset = BlockAsset.FromString( blockName );
+			if ( blockAsset == null )
+				return;
+
 			if ( !player.IsValid() || player.LifeState != LifeState.Alive )
 				return;
 
@@ -117,19 +121,18 @@ namespace Fortwars
 			ent.Position = tr.EndPos;
 			ent.Rotation = Rotation.From( new Angles( 0, player.EyeRotation.Yaw(), 0 ) ) * Rotation.FromAxis( Vector3.Up, 180 );
 
-			if ( blockName.Contains( "steel" ) )
-			{
-				ent.BlockMaterial = BlockMaterial.Steel;
-				ent.SetModel( $"models/blocks/steel/fw_{blockName.Split( '_' )[1]}.vmdl" );
-			}
+			ent.SetModel( blockAsset.WorldModel );
+
+			// TODO: This isn't great, there should be a way to go Type -> Struct
+			if ( blockAsset.BlockType == BlockMaterial.Type.Wood )
+				ent.BlockMaterial = BlockMaterial.Wood;
 			else
-			{
-				ent.SetModel( $"models/blocks/wood/fw_{blockName}.vmdl" );
-			}
+				ent.BlockMaterial = BlockMaterial.Steel;
 
 			ent.SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
 			ent.TeamID = player.TeamID;
 			ent.Owner = player;
+			ent.MaxHealth = blockAsset.MaxHealth;
 
 			ent.OnTeamIDChanged();
 

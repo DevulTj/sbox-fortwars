@@ -1,0 +1,19 @@
+//
+// Fortwars.BlockAsset
+//
+@BaseClass = fwblock : ""
+[
+	blockname(string) { group = "Meta" } : "Block Name" : "My block" : ""
+	blockdescription(string) { group = "Meta" } : "Block Description" : "It does stuff, I guess" : ""
+	blocktype(choices) { group = "Meta" } : "Block Type" : 0 : "" =
+	[
+		0 : "Wood"
+		1 : "Rubber"
+		2 : "Metal"
+	]
+	worldmodel(resource:vmdl) { group = "Meta" } : "World Model" :  : ""
+	iconpath(string) { group = "Meta" editor = "AssetBrowse(png)" } : "Icon Path" :  : ""
+	maxhealth(float) { group = "Meta" } : "Max Health" : "1" : ""
+	spokennames(array:string) { group = "Speech Recognition" } : "Spoken Names" :  : ""
+]
+

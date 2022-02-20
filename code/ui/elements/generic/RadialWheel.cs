@@ -47,7 +47,6 @@ namespace Fortwars
 		protected override void PostTemplateApplied()
 		{
 			base.PostTemplateApplied();
-			BuildIcons();
 
 			//
 			// Create pie selector here so that it regenerates
@@ -117,11 +116,20 @@ namespace Fortwars
 			return selectedItem;
 		}
 
+		// @TODO: Remove this hack when S&box has an assets loaded event.
+		private bool _active = false;
 		public override void Tick()
 		{
 			base.Tick();
 
-			if ( !HasClass( "active" ) )
+			var isActive = HasClass( "active" );
+			if ( !_active && isActive )
+            {
+				BuildIcons();
+			}
+			_active = isActive;
+
+			if ( !isActive )
 			{
 				//VirtualCursor.Reset(); //Temporary to fix multiple wheels
 				return;
